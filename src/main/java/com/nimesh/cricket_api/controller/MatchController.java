@@ -1,5 +1,7 @@
 package com.nimesh.cricket_api.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import com.nimesh.cricket_api.exception.ResourceNotFoundException;
@@ -19,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MatchController {
     @Autowired
     private MatchRepository matchRepository;
-    
+
     // Get all matches
     @GetMapping("/matches")
     public Iterable<Match> getAllMatches() {
@@ -34,8 +36,17 @@ public class MatchController {
 
     // Get a match
     @GetMapping("/matches/{id}")
-    public Match getMatchById(@PathVariable(value = "id") int matchId) {
-        return matchRepository.findById(matchId).orElseThrow(() -> new ResourceNotFoundException("Match", "id", matchId));
+    public Match getMatchById(@PathVariable(value = "id") int matchId) throws ResourceNotFoundException {
+        return matchRepository.findById(matchId)
+                .orElseThrow(() -> new ResourceNotFoundException("Match", "id", matchId));
     }
 
+    // Get matches of a particular team
+    // ************************************************
+    // HOW TO THROW EXCEPTION HERE WHEN INVALID TEAM ID?
+    // ************************************************
+    @GetMapping("/matches/team/{id}")
+    public List<Match> getMatchesByTeamId(@PathVariable(value = "id") int teamId) throws ResourceNotFoundException {
+        return matchRepository.findByTeam1OrTeam2(teamId, teamId);
+    }
 }
