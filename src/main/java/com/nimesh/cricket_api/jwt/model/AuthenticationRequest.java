@@ -1,19 +1,16 @@
 package com.nimesh.cricket_api.jwt.model;
 
-import java.io.Serializable;
+public class AuthenticationRequest {
 
-public class JwtRequest implements Serializable {
-	
 	private String username;
 	private String password;
-	
-	//need default constructor for JSON Parsing
-	public JwtRequest()
-	{
-		
+
+	// need default constructor for JSON Parsing
+	public AuthenticationRequest() {
+
 	}
 
-	public JwtRequest(String username, String password) {
+	public AuthenticationRequest(String username, String password) {
 		this.setUsername(username);
 		this.setPassword(password);
 	}
