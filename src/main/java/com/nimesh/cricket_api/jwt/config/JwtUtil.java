@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -30,10 +29,16 @@ public class JwtUtil {
 	private String secret;
 
 	private int jwtExpirationInMs;
+	private int refreshExpirationInMs;
 	
 	@Value("${jwt.jwtExpirationInMs}")
 	public void setJwtExpirationInMs(int jwtExpirationInMs) {
 		this.jwtExpirationInMs = jwtExpirationInMs;
+	}
+
+	@Value("${jwt.refreshExpirationInMs}")
+	public void refreshExpirationInMs(int refreshExpirationInMs) {
+		this.refreshExpirationInMs = refreshExpirationInMs;
 	}
 
 	// generate token for user
@@ -53,6 +58,14 @@ public class JwtUtil {
 
 		return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + jwtExpirationInMs)).signWith(SignatureAlgorithm.HS512, secret).compact();
+	}
+
+	public String doGenerateRefreshToken(Map<String, Object> claims, String subject) {
+
+		return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
+				.setExpiration(new Date(System.currentTimeMillis() + refreshExpirationInMs))
+				.signWith(SignatureAlgorithm.HS512, secret).compact();
+
 	}
 
 	public boolean validateToken(String authToken) {

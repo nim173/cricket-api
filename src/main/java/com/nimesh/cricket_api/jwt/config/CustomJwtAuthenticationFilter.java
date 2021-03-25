@@ -7,8 +7,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.nimesh.cricket_api.jwt.service.CustomUserDetailsService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,9 +21,6 @@ import io.jsonwebtoken.ExpiredJwtException;
 
 @Component
 public class CustomJwtAuthenticationFilter extends OncePerRequestFilter {
-
-	@Autowired
-	private CustomUserDetailsService jwtUserDetailsService;
 
 	@Autowired
 	private JwtUtil jwtTokenUtil;
@@ -52,7 +47,14 @@ public class CustomJwtAuthenticationFilter extends OncePerRequestFilter {
 				System.out.println("Cannot set the Security Context");
 			}
 		} catch (ExpiredJwtException ex) {
-			request.setAttribute("exception", ex);
+			String isRefreshToken = request.getHeader("isRefreshToken");
+			String requestURL = request.getRequestURL().toString();
+			// allow for Refresh Token creation if following conditions are true.
+			if (isRefreshToken != null && isRefreshToken.equals("true") && requestURL.contains("refreshtoken")) {
+				allowForRefreshToken(ex, request);
+			} else {
+				request.setAttribute("exception", ex);
+			}
 		} catch (BadCredentialsException ex) {
 			request.setAttribute("exception", ex);
 		}
@@ -68,7 +70,6 @@ public class CustomJwtAuthenticationFilter extends OncePerRequestFilter {
 	}
 
 	private void allowForRefreshToken(ExpiredJwtException ex, HttpServletRequest request) {
-
 		// create a UsernamePasswordAuthenticationToken with null values.
 		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 				null, null, null);

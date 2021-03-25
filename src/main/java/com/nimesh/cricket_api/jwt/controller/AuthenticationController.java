@@ -43,7 +43,8 @@ public class AuthenticationController {
 	private CustomUserDetailsService userDetailsService;
 
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
-	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
+	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest)
+			throws Exception {
 
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
@@ -73,7 +74,6 @@ public class AuthenticationController {
 			throw new Exception("USER_DISABLED", e);
 		} catch (BadCredentialsException e) {
 			throw new Exception("INVALID_CREDENTIALS", e);
-
 		}
 	}
 
@@ -94,5 +94,5 @@ public class AuthenticationController {
 		}
 		return expectedMap;
 	}
-	
+
 }
